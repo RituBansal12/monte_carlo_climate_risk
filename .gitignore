@@ -146,7 +146,7 @@ venv.bak/
 climate_risk_env/
 
 # Data files 
-03_data/
+data/
 
 # Spyder project settings
 .spyderproject
