@@ -26,11 +26,6 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Data Folders
-data/
-data_clean/
-
-
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -148,6 +143,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+climate_risk_env/
+
+# Data files 
+03_data/
 
 # Spyder project settings
 .spyderproject

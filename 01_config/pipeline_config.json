@@ -1,0 +1,36 @@
+{
+  "data": {
+    "raw_data_path": "data/",
+    "processed_data_path": "data/processed/",
+    "results_path": "results/"
+  },
+  "cleaning": {
+    "remove_outliers": true,
+    "outlier_threshold": 3.0,
+    "fill_missing_numeric": "median",
+    "coordinate_validation": true
+  },
+  "features": {
+    "temporal_features": true,
+    "geographic_features": true,
+    "impact_features": true,
+    "seasonal_indicators": true
+  },
+  "modeling": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "cross_validation_folds": 5
+  },
+  "monte_carlo": {
+    "n_simulations": 10000,
+    "random_seed": 42,
+    "confidence_levels": [0.05, 0.25, 0.75, 0.95],
+    "time_horizon": 10
+  },
+  "visualization": {
+    "plot_style": "plotly",
+    "color_scheme": "viridis",
+    "interactive_plots": true,
+    "save_formats": ["html", "png"]
+  }
+}
