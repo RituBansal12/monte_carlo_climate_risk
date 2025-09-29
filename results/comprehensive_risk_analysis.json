@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "execution_timestamp": "2025-09-28T21:13:22.981279",
+    "dataset_size": 1974189,
+    "analysis_version": "1.0"
+  },
+  "scenarios": {
+    "TX_flooding_1yr": {
+      "results": {
+        "simulation_results": {
+          "year_1": [
+            {
+              "simulation": 0,
+              "year": 1
+            },
+            {
+              "simulation": 1,
+              "year": 1
+            },
+            {
+              "simulation": 2,
+              "year": 1
+            },
+            {
+              "simulation": 3,
+              "year": 1
+            },
+            {
+              "simulation": 4,
+              "year": 1
+            }
+          ]
+        },
+        "risk_metrics": {},
+        "scenario_summary": {
+          "scenario": {
+            "state": "TX",
+            "category": "flooding",
+            "horizon": 1,
+            "description": "TX Flooding (1-year horizon)"
+          },
+          "key_findings": {},
+          "risk_recommendations": {}
+        }
+      }
+    }
+  },
+  "summary": {
+    "total_scenarios_analyzed": 1,
+    "categories_covered": 1,
+    "states_covered": 1,
+    "analysis_timestamp": "2025-09-28T21:18:24.896789"
+  }
+}

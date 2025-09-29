@@ -1,0 +1,41 @@
+{
+  "simulation_results": {
+    "year_1": [
+      {
+        "simulation": 0,
+        "year": 1,
+        "deaths_predicted": 1.2,
+        "injuries_predicted": 5.1,
+        "property_damage_predicted": 10000
+      },
+      {
+        "simulation": 1,
+        "year": 1,
+        "deaths_predicted": 0.8,
+        "injuries_predicted": 3.2,
+        "property_damage_predicted": 5000
+      },
+      {
+        "simulation": 2,
+        "year": 1,
+        "deaths_predicted": 2.1,
+        "injuries_predicted": 8.4,
+        "property_damage_predicted": 25000
+      },
+      {
+        "simulation": 3,
+        "year": 1,
+        "deaths_predicted": 0.3,
+        "injuries_predicted": 1.8,
+        "property_damage_predicted": 2000
+      },
+      {
+        "simulation": 4,
+        "year": 1,
+        "deaths_predicted": 1.7,
+        "injuries_predicted": 6.9,
+        "property_damage_predicted": 15000
+      }
+    ]
+  }
+}
