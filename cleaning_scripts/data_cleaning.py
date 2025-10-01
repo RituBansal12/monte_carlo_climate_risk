@@ -19,12 +19,7 @@ class DataCleaner:
     """
 
     def __init__(self, config: Dict):
-        """
-        Initialize the data cleaner with configuration settings.
-
-        Args:
-            config: Dict containing cleaning configuration parameters
-        """
+        """Initialize the data cleaner with configuration settings."""
         self.config = config
 
     def clean_sed_details(self, df: pd.DataFrame) -> pd.DataFrame:

@@ -8,7 +8,6 @@ including scenario generation, simulation execution, and risk metrics calculatio
 import numpy as np
 import pandas as pd
 from typing import Dict, List
-from scipy import stats
 
 
 class MonteCarloSimulator:
@@ -20,189 +19,155 @@ class MonteCarloSimulator:
     """
 
     def __init__(self, n_simulations: int = 10000, random_seed: int = 42, historical_data: pd.DataFrame = None):
-        """
-        Initialize the Monte Carlo simulator.
-
-        Args:
-            n_simulations: Number of simulation iterations to run
-            random_seed: Random seed for reproducible results
-            historical_data: Historical disaster data for scenario generation
-        """
+        """Initialize the Monte Carlo simulator."""
         self.n_simulations = n_simulations
         self.random_seed = random_seed
         self.historical_data = historical_data
         np.random.seed(random_seed)
         self.simulation_results = {}
 
-    def run_climate_risk_simulation(self,
-                                  state_code: str,
-                                  disaster_category: str,
-                                  time_horizon: int,
-                                  model: object) -> Dict[str, pd.DataFrame]:
-        """
-        Run Monte Carlo simulation for climate risk prediction.
-
-        Args:
-            state_code: Two-letter state code for analysis
-            disaster_category: Type of disaster to simulate
-            time_horizon: Number of years to simulate
-            model: Trained ClimateRiskModel for the category
-
-        Returns:
-            Dict containing simulation results for each year
-        """
+    def run_climate_risk_simulation(self, state_code: str, disaster_category: str, time_horizon: int, model) -> Dict[str, pd.DataFrame]:
+        """Run Monte Carlo simulation for climate risk prediction."""
         print(f"Running Monte Carlo simulation for {disaster_category} in {state_code}")
 
-        # Generate future scenarios
-        future_scenarios = self._generate_future_scenarios(
-            state_code, disaster_category, time_horizon
-        )
+        try:
+            # Generate future scenarios
+            future_scenarios = self._generate_future_scenarios(state_code, disaster_category, time_horizon)
 
-        # Run simulations
-        simulation_results = {}
+            # Run simulations
+            simulation_results = {}
 
-        for year in range(1, time_horizon + 1):
-            year_scenarios = future_scenarios[future_scenarios['year'] == year]
+            for year in range(1, time_horizon + 1):
+                year_scenarios = future_scenarios[future_scenarios['year'] == year]
 
-            if len(year_scenarios) == 0:
-                continue
+                if len(year_scenarios) == 0:
+                    continue
 
-            # Prepare features for prediction
-            X = model.prepare_features(year_scenarios)
+                # Prepare features for prediction
+                X = model.prepare_features(year_scenarios)
 
-            # Run Monte Carlo iterations
-            yearly_results = self._run_yearly_simulation(X, model, year)
+                # Run Monte Carlo iterations
+                yearly_results = self._run_yearly_simulation(X, model, year)
 
-            simulation_results[f'year_{year}'] = yearly_results
+                simulation_results[f'year_{year}'] = yearly_results.to_dict('records')
 
-        return simulation_results
+            return simulation_results
 
-    def _generate_future_scenarios(self,
-                                 state_code: str,
-                                 disaster_category: str,
-                                 time_horizon: int) -> pd.DataFrame:
-        """
-        Generate future climate scenarios based on historical patterns.
+        except Exception as e:
+            print(f"Simulation failed: {e}")
+            return {}
 
-        Args:
-            state_code: State code for filtering
-            disaster_category: Disaster category for filtering
-            time_horizon: Number of years to generate scenarios for
-
-        Returns:
-            DataFrame containing generated future scenarios
-        """
+    def _generate_future_scenarios(self, state_code: str, disaster_category: str, time_horizon: int) -> pd.DataFrame:
+        """Generate future climate scenarios based on historical patterns."""
         # Get historical data for the state and category
         historical_data = self._get_historical_scenarios(state_code, disaster_category)
+
+        # Ensure month column exists
+        if 'month' not in historical_data.columns and 'begin_date_time' in historical_data.columns:
+            historical_data = historical_data.copy()
+            historical_data['month'] = historical_data['begin_date_time'].dt.month
 
         scenarios = []
 
         for year in range(1, time_horizon + 1):
             # Sample from historical distribution for each month
             for month in range(1, 13):
-                # Get historical events for this month
                 if 'month' not in historical_data.columns:
-                    print(f"Missing 'month' column in historical data for {disaster_category}")
-                    continue
-
-                month_data = historical_data[historical_data['month'] == month]
+                    # If no month column, use all data for each month
+                    month_data = historical_data
+                else:
+                    month_data = historical_data[historical_data['month'] == month]
 
                 if len(month_data) == 0:
-                    # Skip months with no historical events
+                    # If no data for this month, use all available data as fallback
+                    month_data = historical_data
+
+                if len(month_data) == 0:
                     continue
 
                 # Sample number of events from historical distribution
-                n_events = np.random.poisson(month_data.groupby('year').size().mean())
+                if 'year' in month_data.columns:
+                    n_events = np.random.poisson(month_data.groupby('year').size().mean())
+                else:
+                    n_events = np.random.poisson(len(month_data))
 
                 for event in range(n_events):
-                    # Sample event characteristics from historical data
-                    scenario = self._sample_event_scenario(month_data)
-                    scenario['year'] = year
-                    scenario['month'] = month
-                    scenario['simulated'] = True
+                    try:
+                        scenario = self._sample_event_scenario(month_data)
+                        scenario['year'] = year
+                        scenario['month'] = month
+                        scenario['simulated'] = True
+                        scenarios.append(scenario)
+                    except Exception:
+                        scenarios.append({
+                            'year': year,
+                            'month': month,
+                            'simulated': True,
+                            'EVENT_TYPE': 'Unknown'
+                        })
 
-                    scenarios.append(scenario)
+        # Create DataFrame and ensure year column exists
+        future_scenarios = pd.DataFrame(scenarios)
+        if 'year' not in future_scenarios.columns:
+            future_scenarios['year'] = pd.Series(dtype='int64')
 
-        return pd.DataFrame(scenarios)
+        return future_scenarios
 
     def _get_historical_scenarios(self, state_code: str, disaster_category: str) -> pd.DataFrame:
-        """
-        Get historical data for a specific state and category.
-
-        Args:
-            state_code: State code for filtering
-            disaster_category: Disaster category for filtering
-
-        Returns:
-            DataFrame containing filtered historical data
-        """
+        """Get historical data for a specific state and category."""
         if self.historical_data is None or self.historical_data.empty:
-            print(f"No historical data available for {state_code} - {disaster_category}")
             return pd.DataFrame()
 
-        category_data = self.historical_data[self.historical_data['disaster_category'] == disaster_category]
+        category_data = self.historical_data[self.historical_data['CATEGORY'] == disaster_category]
 
         if category_data.empty:
-            print(f"No {disaster_category} events found in historical data")
             return pd.DataFrame()
 
-        # If state_code is specified, try to filter by state (if state column exists)
-        if state_code != 'TEST' and 'state' in category_data.columns:
-            state_data = category_data[category_data['state'] == state_code]
+        # Filter by state if state column exists and state_code is not 'TEST'
+        if state_code != 'TEST' and 'STATE' in category_data.columns:
+            state_data = category_data[category_data['STATE'] == state_code]
             if not state_data.empty:
                 return state_data
             else:
-                print(f"No {disaster_category} events found for state {state_code}")
-                print(f"Using all {disaster_category} events instead")
                 return category_data
 
         return category_data
 
     def _sample_event_scenario(self, month_data: pd.DataFrame) -> Dict:
-        """
-        Sample a single event scenario from historical data.
-
-        Args:
-            month_data: Historical data for a specific month
-
-        Returns:
-            Dict containing sampled event characteristics
-        """
+        """Sample a single event scenario from historical data."""
         scenario = {}
 
         # Sample from each feature's distribution
         for column in month_data.columns:
-            if column not in ['year', 'month', 'simulated']:
-                if month_data[column].dtype in ['int64', 'float64']:
-                    # Sample from normal distribution fitted to historical data
-                    mu = month_data[column].mean()
-                    sigma = month_data[column].std()
+            if column not in ['year', 'month', 'simulated', 'MONTH_NAME']:
+                try:
+                    # Skip problematic columns
+                    if column in ['BEGIN_DATE_TIME', 'END_DATE_TIME', 'begin_date_time', 'end_date_time']:
+                        continue
 
-                    if sigma > 0:
-                        scenario[column] = np.random.normal(mu, sigma)
+                    if month_data[column].dtype in ['int64', 'float64']:
+                        mu = month_data[column].mean()
+                        sigma = month_data[column].std()
+
+                        if sigma > 0 and not pd.isna(sigma):
+                            scenario[column] = np.random.normal(mu, sigma)
+                        else:
+                            scenario[column] = mu
+                    elif month_data[column].dtype == 'object':
+                        unique_values = month_data[column].dropna().unique()
+                        if len(unique_values) > 0:
+                            scenario[column] = np.random.choice(unique_values)
+                        else:
+                            scenario[column] = None
                     else:
-                        scenario[column] = mu
-                else:
-                    # Sample from categorical distribution
-                    scenario[column] = np.random.choice(month_data[column].unique())
+                        scenario[column] = month_data[column].iloc[0] if len(month_data) > 0 else None
+                except Exception:
+                    scenario[column] = month_data[column].iloc[0] if len(month_data) > 0 else None
 
         return scenario
 
-    def _run_yearly_simulation(self,
-                             X: pd.DataFrame,
-                             model: object,
-                             year: int) -> pd.DataFrame:
-        """
-        Run Monte Carlo simulation for a single year.
-
-        Args:
-            X: Feature matrix for the year
-            model: Trained model for prediction
-            year: Year number for tracking
-
-        Returns:
-            DataFrame containing simulation results
-        """
+    def _run_yearly_simulation(self, X: pd.DataFrame, model, year: int) -> pd.DataFrame:
+        """Run Monte Carlo simulation for a single year."""
         results = []
 
         for sim in range(self.n_simulations):
@@ -229,19 +194,22 @@ class MonteCarloSimulator:
         return pd.DataFrame(results)
 
     def calculate_risk_metrics(self, simulation_results: Dict[str, pd.DataFrame]) -> Dict:
-        """
-        Calculate risk metrics from simulation results.
-
-        Args:
-            simulation_results: Dict containing simulation results by year
-
-        Returns:
-            Dict containing comprehensive risk metrics
-        """
+        """Calculate risk metrics from simulation results."""
         all_results = []
-        for year_key, year_df in simulation_results.items():
+        for year_key, year_data in simulation_results.items():
+            # Handle both DataFrame format and list of dicts format
+            if isinstance(year_data, pd.DataFrame):
+                year_df = year_data.copy()
+            elif isinstance(year_data, list):
+                year_df = pd.DataFrame(year_data)
+            else:
+                continue
+
             year_df['year'] = int(year_key.split('_')[1])
             all_results.append(year_df)
+
+        if not all_results:
+            return {}
 
         combined_results = pd.concat(all_results, ignore_index=True)
 

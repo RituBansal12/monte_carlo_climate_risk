@@ -24,40 +24,22 @@ class ClimateRiskModel:
     """
 
     def __init__(self, disaster_category: str):
-        """
-        Initialize the climate risk model for a specific disaster category.
-
-        Args:
-            disaster_category: Name of the disaster category to model
-        """
+        """Initialize the climate risk model for a specific disaster category."""
         self.category = disaster_category
         self.models = {}
-        self.feature_importance = {}
-        self.performance_metrics = {}
 
     def prepare_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Prepare features for modeling by selecting relevant columns and encoding categoricals.
-
-        Args:
-            df: DataFrame containing disaster event data with features
-
-        Returns:
-            DataFrame with prepared features (numeric, encoded, no missing values)
-        """
+        """Prepare features for modeling by selecting relevant columns and encoding categoricals."""
         # Select relevant features for the specific disaster category
         feature_columns = [
-            'year', 'month', 'day_of_year', 'is_weekend',
-            'is_spring', 'is_summer', 'is_fall', 'is_winter',
-            'duration_hours', 'path_length_km',
-            'state_fips', 'magnitude', 'tor_f_scale'
+            'year', 'YEAR', 'BEGIN_DAY', 'STATE_FIPS', 'MAGNITUDE', 'TOR_F_SCALE'
         ]
 
         # Add category-specific features
         if self.category == 'tornado':
-            feature_columns.extend(['tor_length', 'tor_width'])
+            feature_columns.extend(['TOR_LENGTH', 'TOR_WIDTH'])
         elif self.category == 'flooding':
-            feature_columns.append('flood_cause')
+            feature_columns.append('FLOOD_CAUSE')
 
         # Filter features that exist in the dataset
         available_features = [col for col in feature_columns if col in df.columns]
@@ -71,18 +53,7 @@ class ClimateRiskModel:
         return df[available_features].fillna(0)
 
     def train_models(self, X: pd.DataFrame, y: Dict[str, pd.Series]) -> Dict[str, object]:
-        """
-        Train separate models for each impact type and select the best performer.
-
-        Compares Linear Regression and Random Forest models using R² score.
-
-        Args:
-            X: Feature matrix for training
-            y: Dict mapping impact types to target series
-
-        Returns:
-            Dict mapping impact types to trained model information
-        """
+        """Train separate models for each impact type and select the best performer."""
         models = {}
 
         for impact_type, target in y.items():
@@ -135,18 +106,11 @@ class ClimateRiskModel:
             print(f"Best model for {impact_type}: {best_model_name}")
             print(f"R² Score: {model_results[best_model_name]['r2']:.4f}")
 
+        self.models = models
         return models
 
     def predict_impact(self, X: pd.DataFrame) -> Dict[str, np.ndarray]:
-        """
-        Predict impact values for given features using trained models.
-
-        Args:
-            X: Feature matrix for prediction
-
-        Returns:
-            Dict mapping impact types to predicted values
-        """
+        """Predict impact values for given features using trained models."""
         predictions = {}
 
         for impact_type, model_info in self.models.items():
