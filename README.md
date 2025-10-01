@@ -2,7 +2,14 @@
 
 A comprehensive system for predicting climate-related disaster risks using Monte Carlo simulations and machine learning models.
 
-## 🎯 Project Overview
+
+## To-do
+
+1. Model training on sample 
+2. Fix Monte Carlo Simulations
+
+
+## Project Overview
 
 This project implements a Monte Carlo simulation system to predict the probability and impact of climate-related disasters on human life, property, and infrastructure. The system uses historical NOAA storm events data and climate data to model risk scenarios for different disaster categories across US states.
 
@@ -14,7 +21,7 @@ This project implements a Monte Carlo simulation system to predict the probabili
 - **Monte Carlo Simulation**: Probabilistic modeling with uncertainty quantification
 - **Interactive Visualizations**: Comprehensive EDA and risk mapping
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 monte_carlo_climate_risk/

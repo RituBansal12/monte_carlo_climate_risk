@@ -50,12 +50,6 @@ class DataCleaner:
         # Convert damage to numeric values (handle K, M, B suffixes)
         df = self._convert_damage_to_numeric(df)
 
-        # Standardize date formats
-        if 'begin_date_time' in df.columns:
-            df['begin_date_time'] = pd.to_datetime(df['begin_date_time'],
-                                                  format='%m/%d/%Y %H:%M:%S',
-                                                  errors='coerce')
-
         # Validate coordinate data
         df = self._validate_coordinates(df)
 
