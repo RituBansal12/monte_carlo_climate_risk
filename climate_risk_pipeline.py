@@ -146,17 +146,17 @@ class ComprehensiveClimateRiskPipeline:
         # Run simulations
         print(f"Running {len(scenarios)} Monte Carlo simulations...")
 
-        #for i, scenario in enumerate(scenarios, 1):
-            #print(f"  {i}. {scenario['description']}")
+        for i, scenario in enumerate(scenarios, 1):
+            print(f"  {i}. {scenario['description']}")
 
-            #try:
-                #results = self._run_single_scenario(scenario, trained_model_objects, data)
-                #if results:
-                    #scenario_key = f"{scenario['state']}_{scenario['category']}_{scenario['horizon']}yr"
-                    #comprehensive_results['scenarios'][scenario_key] = {'results': results}
-            #except Exception as e:
-                #print(f"Scenario {scenario['description']} failed: {e}")
-                #continue
+            try:
+                results = self._run_single_scenario(scenario, trained_model_objects, data)
+                if results:
+                    scenario_key = f"{scenario['state']}_{scenario['category']}_{scenario['horizon']}yr"
+                    comprehensive_results['scenarios'][scenario_key] = {'results': results}
+            except Exception as e:
+                print(f"Scenario {scenario['description']} failed: {e}")
+                continue
 
         return comprehensive_results
 
@@ -168,7 +168,7 @@ class ComprehensiveClimateRiskPipeline:
         try:
             # Create Monte Carlo simulator
             monte_carlo = MonteCarloSimulator(
-                n_simulations=5,
+                n_simulations=1000,
                 historical_data=data['sed_details']
             )
 

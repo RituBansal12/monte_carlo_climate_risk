@@ -1,169 +1,169 @@
 # Monte Carlo Climate Risk Prediction System
 
-A comprehensive system for predicting climate-related disaster risks using Monte Carlo simulations and machine learning models.
+## Table of Contents
+1. [Overview](#overview)
+2. [Project Workflow](#project-workflow)
+3. [File Structure](#file-structure)
+4. [Data Directory](#data-directory)
+5. [Installation and Setup](#installation-and-setup)
+6. [Usage](#usage)
+7. [Results / Interpretation](#results--interpretation)
+8. [Technical Details](#technical-details)
+9. [Dependencies](#dependencies)
+10. [Notes / Limitations](#notes--limitations)
+11. [License](#license)
 
+---
 
-## To-do
+## Overview
+* **Goal**: Develop a system for predicting climate-related disaster risks using Monte Carlo simulations and machine learning to assess potential impacts.
+* **Approach**: 
+  - Leverage historical NOAA storm events and climate data
+  - Implement statistical models for risk assessment
+  - Utilize Monte Carlo methods for probabilistic risk analysis
 
-1. Model training on sample 
-2. Fix Monte Carlo Simulations
+---
 
+## Project Workflow
 
-## Project Overview
+1. **Data Collection / Extraction**
+   - Download NOAA climate data and storm events
+   - Extract relevant features and metadata
+   - Handle missing values and outliers
 
-This project implements a Monte Carlo simulation system to predict the probability and impact of climate-related disasters on human life, property, and infrastructure. The system uses historical NOAA storm events data and climate data to model risk scenarios for different disaster categories across US states.
+2. **Data Preprocessing / Cleaning**
+   - Clean and validate raw data
+   - Engineer temporal and spatial features
+   - Normalize and scale features for modeling
 
-### Key Features
+3. **Modeling / Analysis**
+   - Train statistical models for risk prediction
+   - Implement Monte Carlo simulations
+   - Validate model performance
 
-- **Risk Prediction**: Predict probabilities of deaths, injuries, property damage, and crop damage
-- **State-Level Analysis**: Provide state-specific risk assessments and comparative analysis  
-- **Category-Specific Models**: Separate prediction models for different disaster types
-- **Monte Carlo Simulation**: Probabilistic modeling with uncertainty quantification
-- **Interactive Visualizations**: Comprehensive EDA and risk mapping
+4. **Visualization / Reporting**
+   - Generate risk assessment reports
+   - Create interactive dashboards
+   - Visualize spatial and temporal patterns
 
-## Project Structure
+---
+
+## File Structure
+
+### Core Scripts
+
+#### `climate_risk_pipeline.py`
+* **Purpose**: Main pipeline for end-to-end climate risk analysis
+* **Input**: Configuration from `config/pipeline_config.json`
+* **Output**: Risk assessment results in `results/` directory
+* **Key Features**: Orchestrates data loading, preprocessing, modeling, and visualization
+
+#### `data_scripts/download_noaa.py`
+* **Purpose**: Download and preprocess NOAA climate data
+* **Input**: API credentials and date ranges
+* **Output**: Processed climate data in `data/processed/`
+* **Key Features**: Handles API rate limiting and data validation
+
+#### `cleaning_scripts/data_cleaning.py`
+* **Purpose**: Clean and preprocess raw data
+* **Input**: Raw data files
+* **Output**: Cleaned datasets ready for analysis
+* **Key Features**: Handles missing values and data validation
+
+#### `modelling_scripts/statistical_models.py`
+* **Purpose**: Implement statistical models for risk prediction
+* **Input**: Preprocessed feature data
+* **Output**: Trained models and predictions
+* **Key Features**: Implements various statistical modeling techniques
+
+#### `modelling_scripts/monte_carlo.py`
+* **Purpose**: Perform Monte Carlo simulations
+* **Input**: Model outputs and parameters
+* **Output**: Risk probability distributions
+* **Key Features**: Handles uncertainty quantification
+
+---
+
+## Data Directory
 
 ```
-monte_carlo_climate_risk/
-├── 01_config/              # ⚙️ Configuration files
-├── 02_data_scripts/        # 📥 Data download scripts
-├── 03_data/                # 📊 Raw datasets
-├── 04_cleaning_scripts/    # 🧹 Data preprocessing
-├── 05_modelling_scripts/   # �� ML models & simulations
-├── 06_test_scripts/        # ✅ Testing & validation
-├── 07_results/             # 📈 Output files & reports
-├── climate_risk_env/       # 🐍 Python virtual environment
-├── run_pipeline.py         # 🚀 Main execution script
-├── requirements.txt        # 📦 Dependencies
-└── [documentation files...]
+data/
+├── raw/           # Raw data files (not version controlled)
+├── processed/     # Cleaned and processed datasets
+└── external/      # External data sources
 ```
 
-## 🚀 Quick Start
+## Installation and Setup
 
-### 1. Environment Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/monte_carlo_climate_risk.git
+   cd monte_carlo_climate_risk
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv climate_risk_env
+   source climate_risk_env/bin/activate  # On Windows: .\climate_risk_env\Scripts\activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+### Run Complete Pipeline
 ```bash
-cd /Users/ritubansal/personal_projects/monte_carlo_climate_risk
-source climate_risk_env/bin/activate
+python climate_risk_pipeline.py --config config/pipeline_config.json
 ```
 
-### 2. Download Data
+### Run Individual Components
 ```bash
-python 02_data_scripts/01_download_noaa.py
-python 02_data_scripts/02_download_storms.py
+# Download data
+python data_scripts/download_noaa.py
+python data_scripts/download_storms.py
+
+# Clean and preprocess data
+python cleaning_scripts/data_cleaning.py
+
+# Run models
+python modelling_scripts/statistical_models.py
+python modelling_scripts/monte_carlo.py
 ```
 
-### 3. Test Installation
-```bash
-python 06_test_scripts/simple_test.py
-```
+## Results / Interpretation
 
-### 4. Run Full Pipeline
-```bash
-python run_pipeline.py
-```
+* **Output Location**: `results/` directory
+* **File Formats**: CSV, JSON, and interactive visualizations
+* **Key Metrics**: Risk scores, confidence intervals, probability distributions
 
-## 📊 Data Sources
+## Technical Details
 
-- **NOAA Climate Data**: County-level climate metrics (1950-2025)
-- **Storm Events Database**: Historical storm events with impact data
-- **Billion-Dollar Events**: Major weather and climate disasters
+* **Algorithms**: Statistical modeling, Monte Carlo simulation
+* **Performance**: Optimized for processing large climate datasets
+* **Scalability**: Supports parallel processing for large-scale analysis
 
-## 🔧 Configuration
+## Dependencies
 
-The `01_config/pipeline_config.json` file contains all configurable parameters:
+* Python 3.8+
+* Core: pandas, numpy, scikit-learn
+* Visualization: matplotlib, seaborn, plotly
+* Data Processing: pyarrow, fastparquet
+* Geospatial: geopy, folium
+* Web Interface: streamlit, dash
+* Scientific Computing: scipy
 
-- Data cleaning settings
-- Feature engineering options
-- Model training parameters
-- Monte Carlo simulation settings
-- Visualization preferences
+## Notes / Limitations
 
-## 🎯 Workflow
+* Data quality depends on NOAA's historical records
+* Model performance may vary by region and disaster type
+* Assumes stationarity of climate patterns
+* Limited by the availability of high-resolution climate projections
 
-1. **Download**: Acquire raw climate and storm data
-2. **Clean**: Preprocess and validate datasets
-3. **Engineer**: Create temporal and geographic features
-4. **Model**: Train statistical models for each disaster category
-5. **Simulate**: Run Monte Carlo simulations for risk assessment
-6. **Analyze**: Generate reports and visualizations
-7. **Validate**: Test and verify results
-
-## 📈 Output & Results
-
-The system generates:
-- **Risk probability distributions** for different disaster scenarios
-- **Interactive visualizations** of state-level risk assessments
-- **Statistical model performance** metrics
-- **Comprehensive reports** with confidence intervals
-- **Temporal trend analysis** for long-term risk forecasting
-
-## 🛠️ Customization
-
-### Adding New Disaster Categories
-1. Update `04_cleaning_scripts/feature_engineering.py`
-2. Add category-specific features
-3. Train new models in `05_modelling_scripts/`
-
-### Modifying Risk Metrics
-1. Edit `01_config/pipeline_config.json`
-2. Update impact calculation formulas
-3. Adjust simulation parameters
-
-## 📚 Documentation
-
-- `plan.md` - Comprehensive implementation plan
-- `PROJECT_STRUCTURE.md` - Detailed project organization guide
-- `ENVIRONMENT_README.md` - Environment management instructions
-
-## 🔍 Key Components
-
-### Data Processing Pipeline
-- **Data Cleaning**: Handle missing values, data types, and validation
-- **Feature Engineering**: Create temporal, geographic, and impact features
-- **Category Classification**: Organize events into disaster categories
-
-### Modeling Framework
-- **Statistical Models**: Machine learning models for impact prediction
-- **Monte Carlo Engine**: Probabilistic risk simulation with uncertainty
-- **Risk Assessment**: Calculate probabilities and confidence intervals
-
-### Analysis & Visualization
-- **State-Level EDA**: Exploratory analysis by geographic region
-- **Category Analysis**: Compare disaster types and patterns
-- **Interactive Dashboards**: Web-based result visualization
-
-## 🧪 Testing
-
-Run the test suite to verify functionality:
-```bash
-python 06_test_scripts/simple_test.py    # Basic functionality
-python 06_test_scripts/test_pipeline.py  # Full pipeline test
-```
-
-## 📝 Requirements
-
-- Python 3.8+
-- pandas, numpy, scikit-learn
-- plotly, matplotlib, seaborn
-- jupyter, streamlit, dash
-- geopy, pyarrow, fastparquet
-
-Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-## 🤝 Contributing
-
-1. Follow the logical workflow order
-2. Add tests for new functionality
-3. Update documentation as needed
-4. Use the established configuration system
-
-## 📄 License
+## License
 
 This project uses publicly available NOAA climate and storm data for research and analysis purposes.
 
 ---
-
-*Built with ❤️ for climate risk assessment and disaster preparedness*
