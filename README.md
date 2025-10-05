@@ -2,16 +2,17 @@
 
 ## Table of Contents
 1. [Overview](#overview)
-2. [Project Workflow](#project-workflow)
-3. [File Structure](#file-structure)
-4. [Data Directory](#data-directory)
-5. [Installation and Setup](#installation-and-setup)
-6. [Usage](#usage)
-7. [Results / Interpretation](#results--interpretation)
-8. [Technical Details](#technical-details)
-9. [Dependencies](#dependencies)
-10. [Notes / Limitations](#notes--limitations)
-11. [License](#license)
+2. [Articles](#articles)
+3. [Project Workflow](#project-workflow)
+4. [File Structure](#file-structure)
+5. [Data Directory](#data-directory)
+6. [Installation and Setup](#installation-and-setup)
+7. [Usage](#usage)
+8. [Results / Interpretation](#results--interpretation)
+9. [Technical Details](#technical-details)
+10. [Dependencies](#dependencies)
+11. [Notes / Limitations](#notes--limitations)
+12. [License](#license)
 
 ---
 
@@ -24,6 +25,10 @@
 
 ---
 
+## Articles
+https://medium.com/@ritu.bansalrb00/can-we-predict-randomness-modeling-climate-risk-with-monte-carlo-simulations-8c02e3a0a8b5
+
+---
 ## Project Workflow
 
 1. **Data Collection / Extraction**
